@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Adipose Tissue Classification Model</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .container { background-color: #f5f5f5; padding: 20px; border-radius: 8px; }
+        input, button { padding: 8px; margin: 5px 0; width: 100%; }
+        button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        .result { margin-top: 15px; padding: 10px; background-color: #e8f5e9; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Adipose Tissue Classification Model</h1>
+        <form method="post" action="/add">
+            <div>
+                <label for="numbers">Glycolytic Enzyme Expression (space-separated):</label>
+                <input type="text" id="numbers" name="numbers" required 
+                       value="{{ numbers }}">
+            </div>
+            <button type="submit">Classify</button>
+        </form>
+
+        {% if result is not none %}
+        <div class="result">
+            <h3>Result:</h3>
+            <p>{{ calculation }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

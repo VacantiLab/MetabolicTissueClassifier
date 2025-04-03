@@ -1,0 +1,35 @@
+Glycolytic Enzyme Expression Example Array:
+0.737062 -0.297366 0.918709 1.195301 0.212010 0.881349 -0.116011 0.256502 0.148948 0.306263 -2.290483 0.296994 0.818196 0.792278 0.118434 0.384367 0.707052 0.643651 0.688815 0.005301 0.472231 0.264970 0.468226 1.798377 0.595257 0.423784 0.831144 -0.923132 0.466556 1.230604
+
+Preparing Docker: 
+- from the root of the application directory (Adipose_Classification_App)
+	docker build -t classification .
+	- creates a docker image with the tag classification, . is the working directory
+	docker run -d -p 8000:800 --name classification classification
+	- creates a container
+	-   -d stands for detached and allows the terminal to be used while running the container
+	-   -p specifies the port where the first port is from the local host to the container and the second is from the container to the app
+	-   --name is the name of the container
+	-   classification at the end of the command is the tag of the image from which the container will be created
+
+- navigate to http://localhost:8000 in your browser
+- copy and paste the above space-delimited array or use a different glycolytic enzyme mRNA expression array
+
+stop the docker container
+docker stop classification
+
+remove the docker container
+docker rm classification
+
+
+For Local Development:
+You can define a docker-compose.yaml file that will update the running docker container as files are changed in the local directory.
+
+Once it is defined, you would run (from the root directory of the application on the local drive):
+# stop and removes any containers defined in the docker-compose.yaml file as well as associated volumes
+docker-compose down -v
+# build the container and ignore cache
+docker-compose up --build
+
+The application will run as described above and the container can be stopped with control+c
+
