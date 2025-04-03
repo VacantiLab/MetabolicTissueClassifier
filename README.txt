@@ -1,0 +1,1 @@
+This repository contains a web application that can be built into a docker container and deployed. It takes in accepts the relative abundances of glycolytic enzyme transcripts (space delimited) in an html form and uses a fully-connected NN to predict the tissue of origin.
