@@ -2,12 +2,17 @@ from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
+import os
+import uvicorn
+
 import torch
 
-from .models import FullyConnectedNN  # Relative import
+from AppFiles.models import FullyConnectedNN  # Relative import
+
+from pathlib import Path
 
 FastAPI_Object = FastAPI()
-templates = Jinja2Templates(directory="/ContainerWD/AppFiles/templates")
+templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 
 @FastAPI_Object.get("/", response_class=HTMLResponse)
 async def show_form(request: Request):
@@ -17,6 +22,12 @@ async def show_form(request: Request):
         "numbers": "",
         "calculation": ""
     })
+
+@FastAPI_Object.get("/health")
+def health_check():
+    print("✅ /health was hit")
+    return {"status": "ok"}
+
 
 @FastAPI_Object.post("/add", response_class=HTMLResponse)
 async def handle_form(
@@ -50,3 +61,7 @@ async def handle_form(
         "numbers": numbers,  # Preserve original input
         "calculation": calculation
     })
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))  # 8080 default for local
+    uvicorn.run("AppFiles.main:FastAPI_Object", host="0.0.0.0", port=port)

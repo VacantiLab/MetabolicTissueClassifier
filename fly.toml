@@ -1,0 +1,37 @@
+# fly.toml app configuration file generated for metabolic-tissue-classifier-restless-butterfly-2367 on 2025-04-07T15:12:58-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'metabolic-tissue-classifier-restless-butterfly-2367'
+primary_region = 'ewr'
+
+[build]
+
+[env]
+  PORT = '8080'
+
+[[services]]
+  protocol = 'tcp'
+  internal_port = 8080
+
+  [[services.ports]]
+    port = 80
+    handlers = ['http']
+
+  [[services.ports]]
+    port = 443
+    handlers = ['tls', 'http']
+
+  [[services.http_checks]]
+    interval = '10s'
+    timeout = '5s'
+    grace_period = '30s'
+    method = 'get'
+    path = '/health'
+    protocol = 'http'
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
