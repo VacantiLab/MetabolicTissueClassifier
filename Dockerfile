@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 #   every time you build the image
 COPY . .
 
-# Make port 80 available to the world outside this container
+# Make port 8080 available to the world outside this container
 EXPOSE 8080
 
 # Make the working directory available so modules can be imported

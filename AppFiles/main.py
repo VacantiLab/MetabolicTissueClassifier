@@ -11,6 +11,12 @@ from AppFiles.models import FullyConnectedNN  # Relative import
 
 from pathlib import Path
 
+# Needed to return request counts for scaling
+from prometheus_client import generate_latest
+from AppFiles.metrics import request_count
+
+from fastapi.responses import PlainTextResponse
+
 FastAPI_Object = FastAPI()
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 
@@ -61,6 +67,17 @@ async def handle_form(
         "numbers": numbers,  # Preserve original input
         "calculation": calculation
     })
+
+# Increments counter
+@FastAPI_Object.middleware("http")
+async def count_requests_middleware(request: Request, call_next):
+    request_count.inc()
+    response = await call_next(request)
+    return response
+
+@FastAPI_Object.get("/metrics", response_class=PlainTextResponse)
+def metrics():
+    return generate_latest()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))  # 8080 default for local

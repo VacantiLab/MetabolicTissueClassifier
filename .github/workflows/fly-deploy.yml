@@ -1,10 +1,22 @@
 # See https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
 
+# Name the workflow
+# State that it will occur on a push to the main branch
 name: Fly Deploy
 on:
   push:
     branches:
       - main
+
+# Create a job that deploys the app
+#   The deployment will run on a GitHub server with ubuntu
+#   The steps accomplish the following:
+#     checkout the latest commit in the current repository
+#     install flyctl on the GitHub server performing the deployment
+#     deploy the application using flyctl deploy --remote-only
+#   On the deplyment server, set the environmental variable FLY_API_TOKEN
+#     Sets it to the value of the GitHub Actions secret named FLY_API_TOKEN
+#     fly.io knows to use an environmental variable named FLY_API_TOKEN to authenticate deployment
 jobs:
   deploy:
     name: Deploy app
@@ -16,3 +28,4 @@ jobs:
       - run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          # ${{ secrets.FLY_API_TOKEN }} takes the value from the GitHub Actions secret named FLY_API_TOKEN

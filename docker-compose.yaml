@@ -1,9 +1,26 @@
+version: '3.8'
+
 services:
   web_service:
     build: .
     container_name: classification
-    command: uvicorn AppFiles.main:FastAPI_Object --host 0.0.0.0 --port 80 --reload
+    command: uvicorn AppFiles.main:FastAPI_Object --host 0.0.0.0 --port 8080 --reload
     ports:
-      - 8000:80
+      - 8000:8080
     volumes:
       - ./AppFiles:/ContainerWD/AppFiles
+    networks:
+      - monitor-net
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - /Users/nv83/github_tools/MetabolicTissueClassifier/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    networks:
+      - monitor-net
+
+networks:
+  monitor-net:

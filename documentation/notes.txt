@@ -33,3 +33,14 @@ docker-compose up --build
 
 The application will run as described above and the container can be stopped with control+c
 
+
+Continuous Deployment (CD):
+CD is handled by a workflow in docker. A fly-deploy.yml file in .github/workflows directory can triggers a deployment whenever a push is made to the specified git branch (usually main). In order to push the workflow, the git token will need workflow permissions. You will also need to supply github with a fly.io API token, storing the API token in GitHub Secrets.
+
+Some code from fly needs to be added to be added as a docker secret or something like that.
+
+CI: similar to CD, a test can be set up to execute by docker everytime there is a push. You can define what that test is. I think it is executed on a docker server
+
+scaling: prometheus tracks usage statistics - it will be run outside of the app. I python script can ask prometheus what the usage statistics are and scale the app on fly accordingly - either by adding more containers or making the container larger
+
+
