@@ -79,6 +79,10 @@ async def count_requests_middleware(request: Request, call_next):
 def metrics():
     return generate_latest()
 
+# run only if this file is executed directly by the python interpreter
+#   (not when imported as a module)
 if __name__ == "__main__":
+    # the port is set to be equal to the environment variable PORT
+    #   if it is not set, it defaults to 8080
     port = int(os.environ.get("PORT", 8080))  # 8080 default for local
     uvicorn.run("AppFiles.main:FastAPI_Object", host="0.0.0.0", port=port)

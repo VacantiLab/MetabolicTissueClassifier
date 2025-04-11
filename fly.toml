@@ -6,13 +6,17 @@
 app = 'metabolic-tissue-classifier-restless-butterfly-2367'
 primary_region = 'ewr'
 
+# The [build] section is not needed because a Dockerfile is present.
 [build]
 
 [env]
+  # Set the port that the app will listen for http requests on
+  # Uvicorn is programmed in main.py to listen on a port specified by this environmental variable
   PORT = '8080'
 
 [[services]]
   protocol = 'tcp'
+  # Set the port that fly routes traffic to - it must match the port that the app listens to requests on
   internal_port = 8080
 
   [[services.ports]]

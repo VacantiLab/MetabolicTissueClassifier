@@ -18,6 +18,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Make port 8080 available to the world outside this container
+# I don't think this actually has runtime consequences, but is a good practice
+# I think it sets meta data for the image
+# In any case, it needs to match the port that the app listens for input on
 EXPOSE 8080
 
 # Make the working directory available so modules can be imported

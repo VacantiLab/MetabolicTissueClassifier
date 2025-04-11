@@ -34,6 +34,9 @@ docker-compose up --build
 The application will run as described above and the container can be stopped with control+c
 
 
+Deployment:
+The app is deployed in a docker container on fly.io. Fly.io is a platform as a service (PaaS). The first step is to install the flyctl client. Fly is configured through a fly.toml file. The commands fly launch or fly deploy will build the docker image in the current directory based on the Dockerfile in the directory - all files in the current directory will be sent for image building and deployment by default. The image can be built locally, but there could be system-container compatibility issues when it is deployed (i.e. it's best to have the image built where it is deployed to take advantage of Docker). Note that flyctl launch will create a fly.toml file that may not work for your setup, therefore it may be best to build your own fly.toml file, create a fly app with flyctl apps create <your-app-name>, and then just use flyctl deploy.
+
 Continuous Deployment (CD):
 CD is handled by a workflow in docker. A fly-deploy.yml file in .github/workflows directory can triggers a deployment whenever a push is made to the specified git branch (usually main). In order to push the workflow, the git token will need workflow permissions. You will also need to supply github with a fly.io API token, storing the API token in GitHub Secrets.
 
