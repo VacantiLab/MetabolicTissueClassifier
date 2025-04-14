@@ -49,7 +49,15 @@ jobs:
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
+      # Build the Docker image to run the tests
+      - name: Build Docker image
+        run: docker build -t myapp-test .
+
+      # Run the Docker image
+      - name: Run tests in Docker
+        run: docker run myapp-test pytest tests/
+
       # Execute the files in the test directory
       #   The test files must follow the naming convention of test_*.py or *_test.py
-      - name: Run tests
-        run: pytest tests/
+      #- name: Run tests
+      #  run: pytest tests/

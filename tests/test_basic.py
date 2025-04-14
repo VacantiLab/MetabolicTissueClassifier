@@ -23,3 +23,4 @@ def test_model_output():
     int_to_label = {0: 'Subcutaneous Adipose Tissue', 1: 'Visceral Adipose Tissue'}
     predicted_class_name = int_to_label[predicted_class.item()]  # Convert to the original label
     calculation = predicted_class_name
+    assert predicted_class_name == 'Visceral Adipose Tissue'
