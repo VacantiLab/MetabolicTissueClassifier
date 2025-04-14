@@ -6,3 +6,5 @@ torch
 watchfiles
 numpy
 prometheus_client
+pytest
+

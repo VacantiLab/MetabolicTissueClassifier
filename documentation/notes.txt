@@ -42,6 +42,6 @@ CD is handled by a workflow in git. A fly-deploy.yml file in .github/workflows d
 
 CI: similar to CD, a test can be set up to execute by docker every time there is a push. It can be handled by a ci.yml file in the .github/workflows directory. The tests are run on a Guthub Actions server (i.e. a runner).
 
-scaling: prometheus tracks usage statistics - it will be run outside of the app. I python script can ask prometheus what the usage statistics are and scale the app on fly accordingly - either by adding more containers or making the container larger
+Scaling: prometheus tracks usage statistics - it will be run outside of the app. I python script can ask prometheus what the usage statistics are and scale the app on fly accordingly - either by adding more containers or making the container larger
 
 
