@@ -45,6 +45,10 @@ jobs:
           pip install -r requirements.txt
           pip install pytest
 
+      # Add the app root to the Github Actions workflow python PATH variable
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
       # Execute the files in the test directory
       #   The test files must follow the naming convention of test_*.py or *_test.py
       - name: Run tests
