@@ -1,21 +1,22 @@
 from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-
+from fastapi import UploadFile, File
 import os
 import uvicorn
-
 import torch
-
 from AppFiles.models import FullyConnectedNN  # Relative import
-
 from pathlib import Path
+import traceback
 
 # Needed to return request counts for scaling
 from prometheus_client import generate_latest
 from AppFiles.metrics import request_count
 
 from fastapi.responses import PlainTextResponse
+
+import pandas as pd
+import io
 
 FastAPI_Object = FastAPI()
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
@@ -25,7 +26,6 @@ async def show_form(request: Request):
     return templates.TemplateResponse("index.html", {
         "request": request,
         #"result": None,
-        "numbers": "",
         "calculation": ""
     })
 
@@ -34,15 +34,17 @@ def health_check():
     print("✅ /health was hit")
     return {"status": "ok"}
 
-
 @FastAPI_Object.post("/add", response_class=HTMLResponse)
 async def handle_form(
     request: Request,
-    numbers: str = Form(...)
+    datafile: UploadFile = File(...)  # expects file upload
 ):
     try:
-        # Split by spaces and convert to floats
-        number_list = [float(num) for num in numbers.split()]
+        # Read uploaded file contents into a DataFrame
+        contents = await datafile.read()
+        df = pd.read_csv(io.StringIO(contents.decode("utf-8")), header=None, delim_whitespace=True)
+        number_list = df.values.flatten().tolist()  # Convert to 1D list of floats
+        
         input_size = 30
         hidden_size1 = 16
         hidden_size2 = 8
@@ -57,14 +59,16 @@ async def handle_form(
         predicted_class_name = int_to_label[predicted_class.item()]  # Convert to the original label
         calculation = predicted_class_name
 
-    except ValueError:
-        total = "Invalid input"
-        calculation = "Please enter numbers separated by spaces"
+
+    except Exception as e:
+        print("❌ Full error traceback:")
+        traceback.print_exc()
+        calculation = f"Error: {str(e)}"
+
     
     return templates.TemplateResponse("index.html", {
         "request": request,
         #"result": total,
-        "numbers": numbers,  # Preserve original input
         "calculation": calculation
     })
 

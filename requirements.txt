@@ -7,4 +7,5 @@ watchfiles
 numpy
 prometheus_client
 pytest
+pandas
 
