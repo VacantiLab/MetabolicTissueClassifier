@@ -1,7 +1,6 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, UploadFile, File, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-from fastapi import UploadFile, File
 import os
 import uvicorn
 import torch
@@ -17,6 +16,22 @@ from fastapi.responses import PlainTextResponse
 
 import pandas as pd
 import io
+
+# Import what is needed to create the relational database
+from AppFiles.db import engine
+from AppFiles.db_models import Base
+Base.metadata.create_all(bind=engine)
+from sqlalchemy.orm import Session
+from AppFiles.db import SessionLocal
+from AppFiles.db_models import UploadedData
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 FastAPI_Object = FastAPI()
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
@@ -37,14 +52,25 @@ def health_check():
 @FastAPI_Object.post("/add", response_class=HTMLResponse)
 async def handle_form(
     request: Request,
-    datafile: UploadFile = File(...)  # expects file upload
+    datafile: UploadFile = File(...),
+    db: Session = Depends(get_db)
 ):
     try:
-        # Read uploaded file contents into a DataFrame
         contents = await datafile.read()
-        df = pd.read_csv(io.StringIO(contents.decode("utf-8")), header=None, delim_whitespace=True)
-        number_list = df.values.flatten().tolist()  # Convert to 1D list of floats
-        
+        text = contents.decode("utf-8")
+
+        # Save to DB
+        db_entry = UploadedData(content=text)
+        db.add(db_entry)
+        db.commit()
+        db.refresh(db_entry)
+
+        # Now fetch the data back and use for prediction
+        text = db_entry.content
+        df = pd.read_csv(io.StringIO(text), header=None, delim_whitespace=True)
+        number_list = df.values.flatten().tolist()
+
+        # Model logic as before
         input_size = 30
         hidden_size1 = 16
         hidden_size2 = 8
@@ -54,23 +80,20 @@ async def handle_form(
         trained_model.eval()
         Test_Array = torch.tensor(number_list, dtype=torch.float32)
         model_outputs = trained_model(Test_Array)
-        value, predicted_class = torch.max(model_outputs, 0)  # Use dimension 0 for a single data point
+        value, predicted_class = torch.max(model_outputs, 0)
         int_to_label = {0: 'Subcutaneous Adipose Tissue', 1: 'Visceral Adipose Tissue'}
-        predicted_class_name = int_to_label[predicted_class.item()]  # Convert to the original label
+        predicted_class_name = int_to_label[predicted_class.item()]
         calculation = predicted_class_name
 
-
     except Exception as e:
-        print("❌ Full error traceback:")
         traceback.print_exc()
         calculation = f"Error: {str(e)}"
 
-    
     return templates.TemplateResponse("index.html", {
         "request": request,
-        #"result": total,
         "calculation": calculation
     })
+
 
 # Increments counter
 @FastAPI_Object.middleware("http")

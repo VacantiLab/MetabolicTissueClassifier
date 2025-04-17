@@ -8,4 +8,6 @@ numpy
 prometheus_client
 pytest
 pandas
+sqlalchemy
+
 
