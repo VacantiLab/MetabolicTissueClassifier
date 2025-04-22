@@ -45,3 +45,14 @@ CI: similar to CD, a test can be set up to execute by docker every time there is
 Scaling: prometheus tracks usage statistics - it will be run outside of the app. I python script can ask prometheus what the usage statistics are and scale the app on fly accordingly - either by adding more containers or making the container larger
 
 
+To Do:
+Load an entire TPM dataset into an SQLite table.
+Give an indication that the data is loaded.
+Once loaded, click another button to perform the following:
+Grab the data from the SQLite table to run in the NN model
+Have the output from softmax returned
+Perform TSNE on softmax results
+Color the TSNE plot based on group membership
+
+
+
