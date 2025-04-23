@@ -1,33 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Tissue Classification Model</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-        .container { background-color: #f5f5f5; padding: 20px; border-radius: 8px; }
-        input, button { padding: 8px; margin: 5px 0; width: 100%; }
-        button { background-color: #4c4faf; color: white; border: none; cursor: pointer; }
-        .result { margin-top: 15px; padding: 10px; background-color: #e8f5e9; border-radius: 4px; }
-    </style>
+    <title>Gene Expression Upload</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Tissue Classification Model</h1>
-        <form method="post" action="/add" enctype="multipart/form-data">
-            <div>
-                <label for="datafile">Upload Data File:</label>
-                <input type="file" id="datafile" name="datafile" accept=".txt,.csv" required>
-            </div>
-            <button type="submit">Classify</button>
-        </form>
-        
+    <h1>Upload Gene Expression Data</h1>
+    
+    <form action="/add" method="post" enctype="multipart/form-data">
+        <label for="datafile">Expression Matrix (tab-delimited):</label><br>
+        <input type="file" name="datafile" accept=".txt,.tsv" required><br><br>
 
-        {% if result is not none %}
-        <div class="result">
-            <h3>Result:</h3>
-            <p>{{ calculation }}</p>
-        </div>
-        {% endif %}
-    </div>
+        <label for="groupfile">Sample Group Assignments (tab-delimited):</label><br>
+        <input type="file" name="groupfile" accept=".txt,.tsv" required><br><br>
+
+        <input type="submit" value="Upload">
+    </form>
+
+    {% if calculation %}
+        <h2>Result:</h2>
+        <p>{{ calculation }}</p>
+    {% endif %}
+
+    <form action="/predict" method="post">
+        <input type="submit" value="Run Model on Uploaded Data">
+    </form>
+    
+    {% if predictions %}
+        <h2>Predictions</h2>
+        <ul>
+            {% for sample, pred in predictions.items() %}
+                <li>{{ sample }} → {{ pred }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    
 </body>
 </html>

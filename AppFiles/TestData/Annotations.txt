@@ -1,4 +1,4 @@
-sample	tissue
+sample	group
 BMS-X4LF-0126-SM-4JBHL	Thyroid
 BMS-X4LF-0326-SM-4JBIR	Muscle - Skeletal
 BMS-X4LF-0426-SM-4JBIS	Skin - Sun Exposed (Lower leg)
