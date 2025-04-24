@@ -114,29 +114,6 @@ async def handle_form(
         })
 
 
-        # Now fetch the data back and use for prediction
-        text = db_entry.content
-        df = pd.read_csv(io.StringIO(text), header=None, delim_whitespace=True)
-        
-        number_list = df.values.flatten().tolist()
-
-        # Model logic as before
-        input_size = 30
-        hidden_size1 = 16
-        hidden_size2 = 8
-        output_size = 2
-        calculation = ComputeAppOutput(input_size, hidden_size1, hidden_size2, output_size, number_list)
-
-    except Exception as e:
-        traceback.print_exc()
-        calculation = f"Error: {str(e)}"
-
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "calculation": calculation
-    })
-
-
 @FastAPI_Object.post("/predict", response_class=HTMLResponse)
 async def run_model(request: Request, db: Session = Depends(get_db)):
     try:
@@ -160,23 +137,33 @@ async def run_model(request: Request, db: Session = Depends(get_db)):
         input_tensor = torch.tensor(wide_df.values, dtype=torch.float32)
         
         # Run your custom function
-        predicted_class_names = ComputeAppOutput(input_tensor)
+        predicted_class_names, softmax_scores, int_to_label = ComputeAppOutput(input_tensor)
 
-        # Map predictions to sample names
+        # For example, zip with sample names for display
         sample_names = wide_df.index.tolist()
-        result = dict(zip(sample_names, predicted_class_names))
-
-
+        results = [
+            {
+                "sample": name,
+                "prediction": label,
+                "probabilities": dict(zip(int_to_label.values(), probs))
+            }
+            for name, label, probs in zip(sample_names, predicted_class_names, softmax_scores)
+            ]
+        
         return templates.TemplateResponse("index.html", {
-            "request": request,
-            "predictions": result
+        "request": request,
+        "predictions": results
         })
+
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return templates.TemplateResponse("index.html", {
             "request": request,
-            "calculation": f"Error running model: {str(e)}"
+            "calculation": f"Error running model: {repr(e)}"
         })
+
 
 
 

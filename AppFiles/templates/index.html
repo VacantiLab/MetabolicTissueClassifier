@@ -28,11 +28,20 @@
     {% if predictions %}
         <h2>Predictions</h2>
         <ul>
-            {% for sample, pred in predictions.items() %}
-                <li>{{ sample }} → {{ pred }}</li>
+            {% for row in predictions %}
+                <li>
+                    <strong>{{ row.sample }} → {{ row.prediction }}</strong><br>
+                    Probabilities:
+                    <ul>
+                        {% for label, prob in row.probabilities.items() %}
+                            <li>{{ label }}: {{ "%.2f"|format(prob * 100) }}%</li>
+                        {% endfor %}
+                    </ul>
+                </li>
             {% endfor %}
         </ul>
     {% endif %}
+
     
 </body>
 </html>
