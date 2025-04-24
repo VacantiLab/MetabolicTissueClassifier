@@ -31,17 +31,16 @@
             {% for row in predictions %}
                 <li>
                     <strong>{{ row.sample }} → {{ row.prediction }}</strong><br>
-                    Probabilities:
-                    <ul>
-                        {% for label, prob in row.probabilities.items() %}
-                            <li>{{ label }}: {{ "%.2f"|format(prob * 100) }}%</li>
-                        {% endfor %}
-                    </ul>
+                    Softmax Vector: [
+                    {% for prob in row.probabilities %}
+                        {{ "%.2e"|format(prob) }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+]
                 </li>
             {% endfor %}
         </ul>
     {% endif %}
 
-    
 </body>
 </html>
+

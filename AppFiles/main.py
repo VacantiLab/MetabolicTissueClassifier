@@ -145,7 +145,7 @@ async def run_model(request: Request, db: Session = Depends(get_db)):
             {
                 "sample": name,
                 "prediction": label,
-                "probabilities": dict(zip(int_to_label.values(), probs))
+                "probabilities": probs
             }
             for name, label, probs in zip(sample_names, predicted_class_names, softmax_scores)
             ]
