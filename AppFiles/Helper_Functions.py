@@ -33,6 +33,8 @@ def ComputeAppOutput(model_input_tensor):
     return predicted_class_names, softmax_scores, int_to_label
 
 def generate_tsne_image(softmax_scores, labels):
+    softmax_scores = np.array(softmax_scores)
+
     tsne = TSNE(n_components=2, random_state=42, perplexity=30)
     tsne_result = tsne.fit_transform(softmax_scores)
 
