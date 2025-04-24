@@ -9,5 +9,9 @@ prometheus_client
 pytest
 pandas
 sqlalchemy
+scikit-learn
+matplotlib
+
+
 
 

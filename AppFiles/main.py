@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 import os
 import uvicorn
 import torch
-from AppFiles.Helper_Functions import ComputeAppOutput  # Relative import
+from AppFiles.Helper_Functions import ComputeAppOutput, generate_tsne_image  # Relative import
 from pathlib import Path
 import traceback
 
@@ -150,9 +150,12 @@ async def run_model(request: Request, db: Session = Depends(get_db)):
             for name, label, probs in zip(sample_names, predicted_class_names, softmax_scores)
             ]
         
+        tsne_image = generate_tsne_image(softmax_scores, predicted_class_names)
+        
         return templates.TemplateResponse("index.html", {
         "request": request,
-        "predictions": results
+        "predictions": results,
+        "tsne_image": tsne_image
         })
 
 
