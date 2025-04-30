@@ -1,0 +1,63 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    # select the virtual machine to run the test on a Github Actions server (i.e. the runner)
+    runs-on: ubuntu-latest
+
+    steps:
+        # Run the checkout Action from the actions organization, using version 3.
+        #   Clones the current github repository onto the runner
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          # create a key for the cache
+          #   if the key changes, the cache will not be used
+          #   the key will be something like ubuntu-latest-pip-e4c2f6d5ba30...
+          #     the hashFiles is a git action that creates a crytographic hash unique to the contents of requirements.txt
+          #       '**/requirements.txt' means any requirements.txt file in any directory
+          # creating a cashe is important to speed up the testing so software does not need to be installed every time
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # Install dependencies
+      #   Should be fast because cached files are restored in the previous step
+      - name: Install dependencies
+        # The "|" notation in yaml means it is a block of commands run one after the other
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      # Add the app root to the Github Actions workflow python PATH variable
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
+      # Build the Docker image to run the tests
+      - name: Build Docker image
+        run: docker build -t myapp-test .
+
+      # Run the Docker image
+      - name: Run tests in Docker
+        run: docker run myapp-test pytest tests/
+
+      # Execute the files in the test directory
+      #   The test files must follow the naming convention of test_*.py or *_test.py
+      #- name: Run tests
+      #  run: pytest tests/

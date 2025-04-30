@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+jinja2
+python-multipart
+torch
+watchfiles
+numpy
+prometheus_client
+pytest
+pandas
+sqlalchemy
+scikit-learn
+matplotlib
+
+
+
+
