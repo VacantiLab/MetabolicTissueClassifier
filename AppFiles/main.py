@@ -138,11 +138,16 @@ async def run_model(request: Request, db: Session = Depends(get_db)):
         df = pd.DataFrame([{
             "gene": row.gene,
             "sample": row.sample,
-            "expression": row.expression
+            "expression": row.expression,
+            "group": row.group
         } for row in data])
 
         # Pivot to wide format: rows = samples, columns = genes
         wide_df = df.pivot(index="sample", columns="gene", values="expression").fillna(0)
+        sample_names = wide_df.index.tolist()
+        df_unique = df.drop_duplicates(subset="sample", keep="first")
+        group_labels = df_unique.set_index("sample").loc[wide_df.index]["group"].tolist()
+
 
         # OPTIONAL: align columns with model input
         # wide_df = wide_df[model_expected_columns]
@@ -164,7 +169,8 @@ async def run_model(request: Request, db: Session = Depends(get_db)):
             for name, label, probs in zip(sample_names, predicted_class_names, softmax_scores)
             ]
         
-        tsne_image = generate_tsne_image(softmax_scores, predicted_class_names)
+        
+        tsne_image = generate_tsne_image(softmax_scores, group_labels)
         
         return templates.TemplateResponse("index.html", {
         "request": request,
