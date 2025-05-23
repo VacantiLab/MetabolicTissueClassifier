@@ -1,3 +1,6 @@
+import numpy as np
+from scipy.stats import zscore
+
 from fastapi import FastAPI, Request, Form, UploadFile, File, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -156,7 +159,7 @@ async def run_model(request: Request, db: Session = Depends(get_db)):
         input_tensor = torch.tensor(wide_df.values, dtype=torch.float32)
         
         # Run your custom function
-        predicted_class_names, softmax_scores, int_to_label = ComputeAppOutput(input_tensor)
+        predicted_class_names, softmax_scores, int_to_label, model_outputs = ComputeAppOutput(input_tensor)
 
         # For example, zip with sample names for display
         sample_names = wide_df.index.tolist()
@@ -169,8 +172,12 @@ async def run_model(request: Request, db: Session = Depends(get_db)):
             for name, label, probs in zip(sample_names, predicted_class_names, softmax_scores)
             ]
         
-        
-        tsne_image = generate_tsne_image(softmax_scores, group_labels)
+        softmax_scores = np.array(softmax_scores)
+        model_outputs = np.array(model_outputs)
+        model_outputs_standard = zscore(model_outputs, axis=0)
+        tsne_vector = model_outputs_standard
+        print(f"tsne vector shape is {tsne_vector.shape}")
+        tsne_image = generate_tsne_image(tsne_vector, group_labels)
         
         return templates.TemplateResponse("index.html", {
         "request": request,

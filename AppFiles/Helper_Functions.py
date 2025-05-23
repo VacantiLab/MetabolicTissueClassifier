@@ -31,7 +31,7 @@ def ComputeAppOutput(model_input_tensor):
         predicted_class_names = [int_to_label[str(int(cls))] for cls in predicted_classes]
         softmax_scores = softmax_probs.tolist()  # Convert to Python list for easier processing
 
-    return predicted_class_names, softmax_scores, int_to_label
+    return predicted_class_names, softmax_scores, int_to_label, model_outputs
 
 def generate_tsne_image(softmax_scores, labels):
     softmax_scores = np.array(softmax_scores)
